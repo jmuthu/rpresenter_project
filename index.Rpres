@@ -1,0 +1,48 @@
+Prediction of Food Basket Prices 
+========================================================
+author: Joe Muthu
+date: 14 Feb 2016
+transition: fade
+Introduction
+========================================================
+
+Food basket prices have been increasing steadily over the period of years. 
+
+A Shiny application is created to forecast food prices based on the data gathered since 1976 from different world cities
+by [UBS prices and earnings](https://www.ubs.com/microsites/prices-earnings/open-data.html). 
+
+
+UBS Prices and Earnings Data
+========================================================
+Based on the data provided by UBS, average food prices were computed out of 32 cities from 1976 to 2015
+
+```{r echo=FALSE, cache=TRUE,fig.align='center'}
+mean_prices <- read.csv("ubs_food_prices.csv")
+plot(mean_prices$Year, mean_prices$Avg_Price, xlab="Year", ylab="Average Prices ($)", xlim=c(1975,2015), 
+               ylim=c(180,500), pch = 20, cex = 1.1, main="Average food basket prices over time")
+```
+
+Prediction Modeling 
+========================================================
+We use a linear model to predict the outcome prices using the year predictor. 
+
+```{r, echo=FALSE,fig.align='center'}
+lmModel <- lm(Avg_Price~Year, data=mean_prices)
+plot(mean_prices$Year, mean_prices$Avg_Price, xlab="Year", ylab="Average Prices ($)", xlim=c(1975,2015), 
+               ylim=c(180,500), pch = 20, cex = 1.1, main="Average food basket prices over time")
+abline(lmModel,col="blue")
+sm <- summary(lmModel)
+mse <- round(mean(sm$residuals^2),0)
+```
+
+Mean squared error rate for the model is `r mse`
+
+Application on Shiny Server
+========================================================
+
+- Forecasts the price based on the given year and also plots the results. 
+- Provides the Training data and cities used in tabular format for additional help.
+ 
+```{r, echo=FALSE}
+
+```
