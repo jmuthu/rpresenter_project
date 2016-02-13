@@ -1,4 +1,4 @@
-Prediction of Food Basket Prices 
+Forecasting World Average Food Basket Prices 
 ========================================================
 author: Joe Muthu
 date: 14 Feb 2016
@@ -14,7 +14,7 @@ by [UBS prices and earnings](https://www.ubs.com/microsites/prices-earnings/open
 
 UBS Prices and Earnings Data
 ========================================================
-Based on the data provided by UBS, average food prices were computed out of 32 cities from 1976 to 2015
+Based on the data provided by UBS, average food prices were computed out of 32 cities from 1976 to 2015 as a time series data.
 
 ```{r echo=FALSE, cache=TRUE,fig.align='center'}
 mean_prices <- read.csv("ubs_food_prices.csv")
@@ -24,7 +24,7 @@ plot(mean_prices$Year, mean_prices$Avg_Price, xlab="Year", ylab="Average Prices 
 
 Prediction Modeling 
 ========================================================
-We use a linear model to predict the outcome prices using the year predictor. 
+Used a linear model to forecast the outcome prices using the year as the predictor. 
 
 ```{r, echo=FALSE,fig.align='center'}
 lmModel <- lm(Avg_Price~Year, data=mean_prices)
@@ -35,14 +35,14 @@ sm <- summary(lmModel)
 mse <- round(mean(sm$residuals^2),0)
 ```
 
-Mean squared error rate for the model is `r mse`
+Mean squared error rate for the model is `r mse`. 
 
 Application on Shiny Server
 ========================================================
-
+Application is hosted [here](https://jmuthu.shinyapps.io/shiny_project/)
 - Forecasts the price based on the given year and also plots the results. 
-- Provides the Training data and cities used in tabular format for additional help.
- 
+- Provides necessary documentation and links for reference and further analysis.
+
 ```{r, echo=FALSE}
 
 ```
