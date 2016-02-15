@@ -5,10 +5,12 @@
 .reveal .state-background {
   background: FloralWhite ;
 } 
-.exclaim .reveal h1,
-.exclaim .reveal h2,
-.exclaim .reveal p {
-  color: white;
+
+.reveal .small {
+ font-size:medium
+}
+.reveal .highlight {
+  color: red;
 }
 </style
 Forecasting World Food Basket Prices 
@@ -22,7 +24,7 @@ transition: fade
 Introduction
 ========================================================
 
-Food basket prices have been increasing steadily over the period of years and there is a need for a handy forecast of prices for various planning like home budgets,etc
+Food basket prices have been increasing steadily over the period of years and there is a need for a handy forecast of prices for various planning like home budgets, expand gardens etc
 
 A web application is created to forecast food prices based on the data gathered since 1976 from different world cities
 by [UBS prices and earnings](https://www.ubs.com/microsites/prices-earnings/open-data.html). 
@@ -33,17 +35,57 @@ Accuracy : Modeled on actual data!
 ========================================================
 Based on the actual data collected by UBS, average food prices were computed out of 32 cities from 1976 to 2015 as a time series data.
 
-```{r echo=FALSE, cache=TRUE,fig.align='center'}
+```{r echo=FALSE, cache=TRUE,fig.align='center',fig.width=12}
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
 mean_prices <- read.csv("ubs_food_prices.csv")
-plot(mean_prices$Year, mean_prices$Avg_Price, xlab="Year", ylab="Average Prices ($)", xlim=c(1975,2015), 
-               ylim=c(180,500), pch = 20, cex = 1.1, main="Actual Food Basket prices over time")
+par(mfrow = c(2, 2))
+p1 <- ggplot(mean_prices, aes(Year,Avg_Price)) +geom_point()+  xlab("Year") + ylab("Average Prices ($)")                + ggtitle("Actual Food Basket prices over time") 
+food_data <- read.csv("ubs_food_prices_by_cities.csv",stringsAsFactors = FALSE)
+library(ggplot2)
+library(gridExtra)
+p2 <- ggplot(subset(food_data, Year %in% c("1976", "1985","1994","2003","2012")), aes(x=as.numeric(Value), colour=as.character(Year))) + geom_density() + ggtitle("Food Price distribution in world cities") + xlab("Food Price($)") + scale_colour_discrete(name  ="Year")
+multiplot(p1,p2,cols=2)
 ```
 
 Prediction Modeling 
 ========================================================
 Used a linear model to forecast the outcome prices using the year as the predictor. 
 
-```{r, echo=FALSE,fig.align='center'}
+```{r, echo=FALSE,fig.align='center',fig.width=10}
 lmModel <- lm(Avg_Price~Year, data=mean_prices)
 plot(mean_prices$Year, mean_prices$Avg_Price, xlab="Year", ylab="Average Prices ($)", xlim=c(1975,2015), 
                ylim=c(180,500), pch = 20, cex = 1.1, main="Average food basket prices over time")
@@ -52,14 +94,19 @@ sm <- summary(lmModel)
 mse <- round(mean(sm$residuals^2),0)
 ```
 
-<small>Mean squared error rate for the model is `r mse`. </small>
+<center><span class="small"> Mean squared error rate for the model is `r mse`. </span></center>
 
-Application on Shiny Server
+Explore the Application!
 ========================================================
-Application is hosted [here](https://jmuthu.shinyapps.io/shiny_project/)
+Application is hosted [here](https://jmuthu.shinyapps.io/shiny_project/) on shiny server
 - Forecasts the price for 32 cities based on the given year and also plots the results for comparison with previous years. 
 - Provides necessary documentation and links for reference and further analysis.
 
+
+Final Thoughts........... 
+
+<span class="highlight">
+Pricing are rising! Time to conserve, recycle and grow one's own food!</span>
 ```{r, echo=FALSE}
 
 ```
